@@ -36,7 +36,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
+import java.io.File;
 /**
  *
  * @author Mafas
@@ -147,12 +147,22 @@ public class GetZipCodeAmazon {
     
         //file name to save the zipcode to the text file
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-        String fileName = "ZipCode_"+timeStamp+".txt";
+        //String fileName = "ZipCode_"+timeStamp+".txt";
+        String fileName = "ZipCodes.txt";
+
         
         //here, response will split by orders
         String[] orders = responseXml.split("<AmazonOrderId>");
         
         Vector<String> idAndZipVector = new Vector<String>();  //creating vector
+
+        /////////Ashwin////////////
+           File file = new File("ZipCodes.txt");
+        if (file.exists())
+        {
+            file.delete();
+        }  
+        /////////////////////////////
         for (String order : orders) 
         {                        
             //skip the first run, because its containing no data
@@ -163,7 +173,8 @@ public class GetZipCodeAmazon {
             {
                 String[] zipCode = order.split("PostalCode");            
                 String zipCo= zipCode[1].replace(">", "").replace("</","");   //>85710-3125</
-                String idAndZip =amazonId + "\t : "+zipCo +"\n";
+                //String idAndZip =amazonId + "\t : "+zipCo +"\n";
+                String idAndZip = zipCo + "\n";
                 
                 idAndZipVector.addElement(idAndZip);  // adding amazon id and zipcode to vector
                 writeFile(idAndZip,fileName);  // adding to txt file
@@ -189,9 +200,12 @@ public class GetZipCodeAmazon {
     
     public static void writeFile(String line, String fileName)
     {  
+      
         try ( FileWriter fw = new FileWriter(fileName,true))   //the true will append the new data
         {
+
             fw.write(line);    //appends the string to the file
+
         } catch (IOException ex) {
             Logger.getLogger(GetZipCodeAmazon.class.getName()).log(Level.SEVERE, null, ex);
         }           
