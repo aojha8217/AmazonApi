@@ -25,6 +25,8 @@ javac -cp MWSOrders_2013-09-01_v2018-01-17.jar;MWSClientJavaRuntime-1.0.jar;comm
 Run the java code..
 java -cp MWSOrders_2013-09-01_v2018-01-17.jar;MWSClientJavaRuntime-1.0.jar;commons-codec-1.6.jar;commons-logging-api-1.1.1.jar;httpclient-4.2.3.jar;httpcore-4.2.jar; GetZipCodeAmazon
 
+Run the Python Code:
+python amZips.py
 
 
 this may be help you..
