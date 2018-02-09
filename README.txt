@@ -32,5 +32,10 @@ python amZips.py
 this may be help you..
 https://stackoverflow.com/questions/9395207/how-to-include-jar-files-with-java-file-and-compile-in-command-prompt
 
-I love Ashwin -Philip
+git pull
+Git add (file name. Extension)
+Git commit -m "message"
+Git push
+
+
  
