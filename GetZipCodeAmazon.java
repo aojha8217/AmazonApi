@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 
 import com.amazonservices.mws.orders._2013_09_01.MarketplaceWebServiceOrders;
 import com.amazonservices.mws.orders._2013_09_01.MarketplaceWebServiceOrdersAsyncClient;
@@ -13,6 +7,7 @@ import com.amazonservices.mws.orders._2013_09_01.MarketplaceWebServiceOrdersExce
 import com.amazonservices.mws.client.*;
 import com.amazonservices.mws.orders._2013_09_01.*;
 import com.amazonservices.mws.orders._2013_09_01.model.*;
+import com.amazonservices.mws.orders._2013_09_01.samples.ListOrderItemsSample;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -41,7 +36,7 @@ import java.io.File;
 
 /**
  *
- * @author Mafas
+ * @author Philip Ruffini
  */
 public class GetZipCodeAmazon {
  
@@ -77,7 +72,7 @@ public class GetZipCodeAmazon {
      }
         
     /**
-     * @param args the command line arguments
+     * args the command line arguments
      */
     public static void main(String[] args)  {
         System.out.println("Starting..."); 
@@ -131,26 +126,18 @@ public class GetZipCodeAmazon {
         //assign create before date 
         request.setCreatedBefore(CreatedBeforexmlGregCal);
         
-        // assign market place, here i add for usa, you can add more..
+        // assign market place
         List<String> marketplaceId = new ArrayList<>();
         marketplaceId.add(MarketPlaceID);
         request.setMarketplaceId(marketplaceId);
        
-        //file name to save the zipcode to the text file
+        //Save to Txt File ZipCodes.txt
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         String fileName = "ZipCodes.txt";
-        Vector<String> idAndZipVector;  
+        Vector<String> idAndZipVector;
         idAndZipVector = new Vector<String>();
-        int count =1;   
+        int count =1;
         boolean bool = true;
-        
-        /////////////////////////////
-        File file = new File("ZipCodes.txt");
-        if (file.exists())
-        {
-            file.delete();
-        }
-        /////////////////////////////
         
         System.out.println("Downloading Orders...!!!");
         
@@ -166,22 +153,46 @@ public class GetZipCodeAmazon {
         }
                     
         //here, response will split by orders
-        String[] orders = responseXml.split("<AmazonOrderId>");        
-        
-        
-        for (String order : orders)
+        String[] orders = responseXml.split("<AmazonOrderId>");
+        int x=0;
+        for (String order : orders) 
         {                        
             //skip the first run, because its containing no data
             if (order.equals(orders[0])) continue; 
-            String amazonId = order.substring(0,19);              
+            String amazonId = order.substring(0,19);    
             try 
             {
-                String[] zipCode = order.split("PostalCode");            
-                String zipCo= zipCode[1].replace(">", "").replace("</","");   //>85710-3125</
-                String idAndZip =amazonId + "\t : "+zipCo +"\n";
-
-                idAndZipVector.addElement(amazonId + " : "+ zipCo);  // adding amazon id and zipcode to vector
+                String[] PDate = order.split("<PurchaseDate>");
+                String PurchaseDate = PDate[1].substring(0,10);                                 
+        
+                String[] zip = order.split("PostalCode");            
+                String zipCode= zip[1].replace(">", "").replace("</","");   //>85710-3125</
+                
+                String[] address = order.split("<ShippingAddress>");
+                String[] Address2 = address[1].split("</ShippingAddress>");
+                String FullAddress = Address2[0].replace("<Name>", " ").replace("</Name>"," ").replace("<AddressLine1>", " ").replace("</AddressLine1>", " ").replace("<AddressLine2>", " ").replace("</AddressLine2>", " ").replace("<City>", " ").replace("</City>", " ").replace("<StateOrRegion>", " ").replace("</StateOrRegion>", " ").replace("<PostalCode>", " ").replace("</PostalCode>", " ").replace("<CountryCode>", " ").replace("</CountryCode>", "");
+                //System.out.println(FullAddress);
+                
+                String productName = getProductName(amazonId,client);    //output is = ASIN : Title        
+                Thread.sleep(1000);
+                
+                //orderId : date : asin : tilte : address : zipcode
+                idAndZipVector.addElement(amazonId + " : "+ PurchaseDate + " : " + productName+" : "+FullAddress);  // adding amazon id and zipcode to vector
+                String idAndZip =amazonId + "\t : "+PurchaseDate + "\t : "+productName+ "\t : "+FullAddress+"\n \n";
                 writeFile(idAndZip,fileName);  // adding to txt file
+                System.out.println(idAndZip);
+                if(x>50)
+                {
+                    try 
+                    {
+                        System.out.println("Waiting 30 Seconds to reset API calls...!");
+                        Thread.sleep(30000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(GetZipCodeAmazon.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    x=0;
+                }
+                x++;
             } 
             catch (Exception e) 
             {
@@ -236,13 +247,38 @@ public class GetZipCodeAmazon {
                         if (order.equals(ordersNext[0])) continue; 
                         String amazonId = order.substring(0,19);              
                         try 
-                        {
-                            String[] zipCode = order.split("PostalCode");            
-                            String zipCo= zipCode[1].replace(">", "").replace("</","");   //>85710-3125</
-                            String idAndZip =amazonId + "\t : "+zipCo +"\n";
+                        {                         
+                            String[] PDate = order.split("<PurchaseDate>");
+                            String PurchaseDate = PDate[1].substring(0,10);                                 
 
-                            idAndZipVector.addElement(amazonId + " : "+ zipCo);  // adding amazon id and zipcode to vector
+                            String[] zip = order.split("PostalCode");            
+                            String zipCode= zip[1].replace(">", "").replace("</","");   //>85710-3125</
+
+                            String[] address = order.split("<ShippingAddress>");
+                            String[] Address2 = address[1].split("</ShippingAddress>");
+                            String FullAddress = Address2[0].replace("<Name>", " ").replace("</Name>"," ").replace("<AddressLine1>", " ").replace("</AddressLine1>", " ").replace("<AddressLine2>", " ").replace("</AddressLine2>", " ").replace("<City>", " ").replace("</City>", " ").replace("<StateOrRegion>", " ").replace("</StateOrRegion>", " ").replace("<PostalCode>", " ").replace("</PostalCode>", " ").replace("<CountryCode>", " ").replace("</CountryCode>", "");
+                            //System.out.println(FullAddress);
+
+                            String productName = getProductName(amazonId,client);    //output is = ASIN : Title        
+                            Thread.sleep(1000);
+
+                            //orderId : date : asin : tilte : address : zipcode
+                            idAndZipVector.addElement(amazonId + " : "+ PurchaseDate + " : " + productName+" : "+FullAddress);  // adding amazon id and zipcode to vector
+                            String idAndZip =amazonId + "\t : "+PurchaseDate + "\t : "+productName+ "\t : "+FullAddress+"\n";
                             writeFile(idAndZip,fileName);  // adding to txt file
+                            System.out.println(x+" - " +idAndZip);
+                            if(x>50)
+                            {
+                                try 
+                                {
+                                    System.out.println("Waiting 30 Seconds to reset API calls...!");
+                                    Thread.sleep(30000);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(GetZipCodeAmazon.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                x=0;
+                            }
+                            x++;
                         } 
                         catch (Exception e) 
                         {
@@ -261,13 +297,7 @@ public class GetZipCodeAmazon {
                 bool=false;
                 //JOptionPane.showMessageDialog(null, e.toString(), "NextToken throws error", JOptionPane.INFORMATION_MESSAGE);
             }
-            try 
-            {
-                System.out.println("Waiting 60 Seconds to reset API calls...");
-                Thread.sleep(60000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(GetZipCodeAmazon.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
         }
         
         
@@ -306,7 +336,8 @@ public class GetZipCodeAmazon {
             System.out.println("Response: OK");
             System.out.println("RequestId: "+rhmd.getRequestId());
             System.out.println("Timestamp: "+rhmd.getTimestamp());
-            String responseXml = response.toXML();
+            System.out.println("Loading...");
+            //String responseXml = response.toXML();
             //System.out.println(responseXml);
             //JOptionPane.showMessageDialog(null, responseXml.toString(), "InfoBox", JOptionPane.INFORMATION_MESSAGE);
             return response;
@@ -315,11 +346,6 @@ public class GetZipCodeAmazon {
             
             // Exception properties are important for diagnostics.
             System.out.println("Service Exception:");
-            ResponseHeaderMetadata rhmd = ex.getResponseHeaderMetadata();
-            if(rhmd != null) {
-                System.out.println("RequestId: "+rhmd.getRequestId());
-                System.out.println("Timestamp: "+rhmd.getTimestamp());
-            }
             System.out.println("Message: "+ex.getMessage());
             System.out.println("StatusCode: "+ex.getStatusCode());
             System.out.println("ErrorCode: "+ex.getErrorCode());
@@ -365,8 +391,7 @@ public class GetZipCodeAmazon {
     /**
      * Get an async client connection ready to use.
      *
-     * @param accessKey
-     * @param secretKey
+     *
      * @return A ready to use client connection.
      */
     public static synchronized MarketplaceWebServiceOrdersAsyncClient getAsyncClient(String accessKey, String secretKey) {
@@ -389,10 +414,11 @@ public class GetZipCodeAmazon {
             ListOrdersByNextTokenResponse response = client.listOrdersByNextToken(request);
             ResponseHeaderMetadata rhmd = response.getResponseHeaderMetadata();
             // We recommend logging every the request id and timestamp of every call.
-            System.out.println("Response: OK");
+            System.out.println("Response:OK");
             System.out.println("RequestId: "+rhmd.getRequestId());
             System.out.println("Timestamp: "+rhmd.getTimestamp());
-            String responseXml = response.toXML();
+            System.out.println("Loading...");
+            //String responseXml = response.toXML();
             //System.out.println(responseXml);
             return response;
         } catch (MarketplaceWebServiceOrdersException ex) {
@@ -410,8 +436,51 @@ public class GetZipCodeAmazon {
             throw ex;
         }
     }
+
+    public static String getProductName(String amazonId,MarketplaceWebServiceOrdersClient client) 
+    {
+        try 
+        {
+            // Create a request.
+            ListOrderItemsRequest request = new ListOrderItemsRequest();
+            request.setSellerId(Seller_ID);
+            request.setMWSAuthToken(MWS_AuthToken);
+            request.setAmazonOrderId(amazonId);
+
+            // Make the call.
+            ListOrderItemsResponse response = invokeListOrderItems(client, request);
+            String responseProduct = response.toXML();
+            //System.out.println(responseProduct);
+            String[] ProInfo = responseProduct.split("<Title>");
+            String[] ProInfo2 = ProInfo[1].split("</Title>");
+            
+            String[] Asin = responseProduct.split("<ASIN>");
+            String[] AsinCode = Asin[1].split("</ASIN>");
+
+            return AsinCode[0]+" : "+ProInfo2[0];    
+        } catch (Exception e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "pr error", JOptionPane.INFORMATION_MESSAGE);
+        }
+        return null;
+    }
     
-    
+    public static ListOrderItemsResponse invokeListOrderItems(
+            MarketplaceWebServiceOrders client, 
+            ListOrderItemsRequest request) {
+        try {
+            // Call the service.
+            ListOrderItemsResponse response = client.listOrderItems(request);        
+            return response;
+        } catch (MarketplaceWebServiceOrdersException ex) {
+            // Exception properties are important for diagnostics.
+            System.out.println("Service Exception: Getting Product Information");      
+            System.out.println("Message: "+ex.getMessage());
+            System.out.println("StatusCode: "+ex.getStatusCode());
+            System.out.println("ErrorCode: "+ex.getErrorCode());
+            System.out.println("ErrorType: "+ex.getErrorType());
+            throw ex;
+        }
+    }
     
     
 
