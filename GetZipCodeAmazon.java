@@ -170,7 +170,7 @@ public class GetZipCodeAmazon {
                 
                 String[] address = order.split("<ShippingAddress>");
                 String[] Address2 = address[1].split("</ShippingAddress>");
-                String FullAddress = Address2[0].replace("<Name>", " ").replace("</Name>"," ").replace("<AddressLine1>", " ").replace("</AddressLine1>", " ").replace("<AddressLine2>", " ").replace("</AddressLine2>", " ").replace("<City>", " ").replace("</City>", " ").replace("<StateOrRegion>", " ").replace("</StateOrRegion>", " ").replace("<PostalCode>", " ").replace("</PostalCode>", " ").replace("<CountryCode>", " ").replace("</CountryCode>", "");
+                String FullAddress = Address2[0].replace("<Name>", " ").replace("</Name>",", ").replace("<AddressLine1>", " ").replace("</AddressLine1>", " ").replace("<AddressLine2>", " ").replace("</AddressLine2>", " ").replace("<City>", " ").replace("</City>", " ").replace("<StateOrRegion>", " ").replace("</StateOrRegion>", " ").replace("<PostalCode>", " ").replace("</PostalCode>", " ").replace("<CountryCode>", " ").replace("</CountryCode>", "");
                 //System.out.println(FullAddress);
                 
                 String productName = getProductName(amazonId,client);    //output is = ASIN : Title        
@@ -256,7 +256,7 @@ public class GetZipCodeAmazon {
 
                             String[] address = order.split("<ShippingAddress>");
                             String[] Address2 = address[1].split("</ShippingAddress>");
-                            String FullAddress = Address2[0].replace("<Name>", " ").replace("</Name>"," ").replace("<AddressLine1>", " ").replace("</AddressLine1>", " ").replace("<AddressLine2>", " ").replace("</AddressLine2>", " ").replace("<City>", " ").replace("</City>", " ").replace("<StateOrRegion>", " ").replace("</StateOrRegion>", " ").replace("<PostalCode>", " ").replace("</PostalCode>", " ").replace("<CountryCode>", " ").replace("</CountryCode>", "");
+                            String FullAddress = Address2[0].replace("<Name>", " ").replace("</Name>",", ").replace("<AddressLine1>", " ").replace("</AddressLine1>", " ").replace("<AddressLine2>", " ").replace("</AddressLine2>", " ").replace("<City>", " ").replace("</City>", " ").replace("<StateOrRegion>", " ").replace("</StateOrRegion>", " ").replace("<PostalCode>", " ").replace("</PostalCode>", " ").replace("<CountryCode>", " ").replace("</CountryCode>", "");
                             //System.out.println(FullAddress);
 
                             String productName = getProductName(amazonId,client);    //output is = ASIN : Title        
