@@ -178,7 +178,7 @@ public class GetZipCodeAmazon {
                 
                 //orderId : date : asin : tilte : address : zipcode
                 idAndZipVector.addElement(amazonId + " : "+ PurchaseDate + " : " + productName+" : "+FullAddress);  // adding amazon id and zipcode to vector
-                String idAndZip =amazonId + "\t : "+PurchaseDate + "\t : "+productName+ "\t : "+FullAddress+"\n \n";
+                String idAndZip =amazonId + "\t : "+PurchaseDate + "\t : "+productName+ "\t : "+FullAddress+"\n";
                 writeFile(idAndZip,fileName);  // adding to txt file
                 System.out.println(idAndZip);
                 if(x>50)
