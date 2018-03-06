@@ -99,6 +99,8 @@ if __name__ == "__main__":
 	for y in searchDictionary:
 		#resultsFile.write(searchDictionary[y]["Original"] + "\n")
 		resultsFile.write(searchDictionary[y]["Address"] + "\n")
+	totalResults = len(searchDictionary)
+	print("You had " + str(totalResults) + " results")
 
 
 
