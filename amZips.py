@@ -10,8 +10,23 @@ import re
 import operator
 import requests
 
+
+google_api_key = "AIzaSyD3cn_utAfFePi70-Ay1KFI9_QgA7VFckI"
+googleBaseUrl = "https://maps.googleapis.com/maps/api/geocode/json"
+
+
 #Because I am storing date as a number this a function you can use it back to turn it back into
 #a string of the normal format "month/day/year"
+
+def getRequest(address):
+	req = requests.Request(method = 'GET', url =googleBaseUrl,params ={'address': address, 'key':google_api_key} )
+	prepped = req.prepare()
+	response = requests.Session().send(prepped)
+	jsonResponse  =json.loads(response.text)
+	lat = jsonResponse['results'][0]['geometry']['location']['lat']
+	lng = jsonResponse['results'][0]['geometry']['location']['lng']
+	return (lat,lng)
+
 def putBackDate(dateNum):
 	dateString = str(dateNum)
 	year = dateString[0:4]
@@ -96,9 +111,11 @@ if __name__ == "__main__":
 	
 	#Output Query results to queryResults.txt
 	resultsFile = open("queryResults.txt","w+")
+	counter= 0
 	for y in searchDictionary:
-		#resultsFile.write(searchDictionary[y]["Original"] + "\n")
-		resultsFile.write(searchDictionary[y]["Address"] + "\n")
+		lat,lng = getRequest(searchDictionary[y]["Address"])
+		resultsFile.write(str(lat) + "," + str(lng) + "\n")
+		#resultsFile.write(searchDictionary[y]["Address"] + "\n")
 	totalResults = len(searchDictionary)
 	print("You had " + str(totalResults) + " results")
 
