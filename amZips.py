@@ -97,7 +97,9 @@ if __name__ == "__main__":
 	#Output Query results to queryResults.txt
 	resultsFile = open("queryResults.txt","w+")
 	for y in searchDictionary:
-		resultsFile.write(searchDictionary[y]["Original"] + "\n")
+		#resultsFile.write(searchDictionary[y]["Original"] + "\n")
+		resultsFile.write(searchDictionary[y]["Address"] + "\n")
+
 
 
 
