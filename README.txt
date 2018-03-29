@@ -32,13 +32,15 @@ python amZips.py
 this may be help you..
 https://stackoverflow.com/questions/9395207/how-to-include-jar-files-with-java-file-and-compile-in-command-prompt
 
+https://maps.googleapis.com/maps/api/js?key=AIzaSyCnC0OohF6XljcZTVSsoBgdz2_c1PmmUFs&libraries=visualization
+
 git pull
 Git add (file name. Extension)
 Git commit -m "message"
 Git push
 
 Running Python Program:
-python python amZips.py (starting date) (ending date) Asin
+python amZips.py (starting date) (ending date) Asin
 Ex: python amZips.py 12/31/2017 1/01/2018 B071YN6PY2
 
 

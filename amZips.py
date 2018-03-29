@@ -94,9 +94,9 @@ if __name__ == "__main__":
 	ASIN  = str(sys.argv[3])
 
 	#Getting inputs from the user straight up from typing (Uncomment this and comment above one if you want it)
-	# startingDate = input("Enter a Starting Date (month/day/year): ")
-	# endingDate = input("Enter a Ending Date (month/day/year): ")
-	# ASIN  = input("Enter a ASIN")
+	#startingDate = input("Enter a Starting Date (month/day/year): ")
+	#endingDate = input("Enter a Ending Date (month/day/year): ")
+	#ASIN  = input("Enter a ASIN: ")
 
 	startDateArray = startingDate.split("/")
 	endingDateArray = endingDate.split("/")
