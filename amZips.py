@@ -23,6 +23,9 @@ def getRequest(address):
 	prepped = req.prepare()
 	response = requests.Session().send(prepped)
 	jsonResponse  =json.loads(response.text)
+	if 'status' in jsonResponse:
+		if jsonResponse['status'] == "ZERO_RESULTS":
+			return(10000,10000)
 	lat = jsonResponse['results'][0]['geometry']['location']['lat']
 	lng = jsonResponse['results'][0]['geometry']['location']['lng']
 	return (lat,lng)
@@ -63,14 +66,21 @@ def parse(inputString, finalDict):
 
 	key = entryParts[0].strip()
 	finalDict[key] = {}
+
 	tempDate = entryParts[1].strip().split("-")
 
 	finalDict[key]["Original"] = inputString.strip()
 	finalDict[key]['Date'] = processDate(tempDate)
 	finalDict[key]['Asin'] = (entryParts[2].strip())
-	finalDict[key]['Name'] = (entryParts[3].strip())
+	if finalDict[key]['Asin'] == "null":
+		finalDict[key]['Name'] = "Ashwin"
+		finalDict[key]['Address'] = entryParts[3].split(",")[1].strip("\n").strip()
+	else:
+		finalDict[key]['Name'] = (entryParts[3].strip())
+		finalDict[key]['Address'] = entryParts[4].split(",")[1].strip("\n").strip()
 
-	finalDict[key]['Address'] = entryParts[4].split(",")[1].strip("\n").strip()
+	
+
 	return finalDict
 
 
@@ -78,7 +88,8 @@ def parse(inputString, finalDict):
 
 
 if __name__ == "__main__":
-	filename = "Zipcodes.txt"
+	#filename = "Zipcodes.txt"
+	filename = "2017to2018ZC.txt"
 	finalDict = {}
 	inputFile = open(filename,'r')
 	data = inputFile.readlines()#Stores each line as an entry into the array data
@@ -113,7 +124,10 @@ if __name__ == "__main__":
 	resultsFile = open("queryResults.txt","w+")
 	counter= 0
 	for y in searchDictionary:
+		#print(searchDictionary[y]["Address"])
 		lat,lng = getRequest(searchDictionary[y]["Address"])
+		if lat == 10000:
+			continue
 		resultsFile.write(str(lat) + "," + str(lng) + "\n")
 		#resultsFile.write(searchDictionary[y]["Address"] + "\n")
 	totalResults = len(searchDictionary)
